@@ -1,5 +1,5 @@
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         headers: {
@@ -23,7 +23,7 @@ export default {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': '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',
+        'x-api-key': env.API_KEY,
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify(body),
