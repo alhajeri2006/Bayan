@@ -12,6 +12,13 @@ export default {
       });
     }
 
+    if (request.method !== 'POST') {
+      return new Response('Bayan API is running ✓', { 
+        status: 200,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+      });
+    }
+
     const body = await request.json();
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -34,3 +41,4 @@ export default {
     });
   }
 };
+
