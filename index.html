@@ -363,14 +363,15 @@ async function analyzeText(arabic){
   const prompt=`You are an expert Quran scholar. A user's device captured this Arabic text (may have minor transcription errors): "${arabic}"\n\nIdentify which Surah and verse(s) this is from. Respond ONLY with valid JSON, no markdown:\n{"surah_number":<1-114>,"surah_name_arabic":"<Arabic with diacritics>","surah_name_latin":"<transliteration>","surah_name_english":"<meaning>","verses":"<e.g. 1-3>","juz":"<number>","revelation":"Meccan or Medinan","confidence":<0-100>,"translation":"<English meaning, max 2 sentences>","note":"<optional note>"}\nIf cannot identify: {"error":"Could not identify Surah. Please try a longer or clearer passage."}`;
   try{
     const res=await fetch('https://bayan.alhajeri2006.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
-const data=await res.json();
-if(data.error){ setStatus('API error: '+JSON.stringify(data.error),'error'); actionRow.style.display='flex'; loaderRow.style.display='none'; return; }
-const raw=data.content?.find(b=>b.type==='text')?.text||'';
-const result=JSON.parse(raw.replace(/```json|```/g,'').trim());
-loaderRow.style.display='none';
-if(result.error){ setStatus(result.error,'error'); actionRow.style.display='flex'; return; }
-displayResult(result);
+    const data=await res.json();
+    const raw=data.content?.find(b=>b.type==='text')?.text||'';
+    const result=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    loaderRow.style.display='none';
+    if(result.error){ setStatus(result.error,'error'); actionRow.style.display='flex'; return; }
+    displayResult(result);
+  }catch(err){ loaderRow.style.display='none'; setStatus('Analysis failed. Check connection and try again.','error'); actionRow.style.display='flex'; }
 }
+
 function displayResult(r){
   document.getElementById('resSurahLatin').textContent=r.surah_name_latin||'—';
   document.getElementById('resBadge').textContent=`Surah ${r.surah_number}`;
