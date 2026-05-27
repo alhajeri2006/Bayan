@@ -1,7 +1,5 @@
-const API_KEY = env.API_KEY;
-
 export default {
-  async fetch(request, env) {
+  async fetch(request) {
     if (request.method === 'OPTIONS') {
       return new Response(null, {
         headers: {
@@ -13,7 +11,7 @@ export default {
     }
 
     if (request.method !== 'POST') {
-      return new Response('Bayan API is running ✓', { 
+      return new Response('Bayan API is running ✓', {
         status: 200,
         headers: { 'Access-Control-Allow-Origin': '*' }
       });
@@ -25,7 +23,7 @@ export default {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': API_KEY,
+        'x-api-key': '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',
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify(body),
@@ -41,4 +39,3 @@ export default {
     });
   }
 };
-
