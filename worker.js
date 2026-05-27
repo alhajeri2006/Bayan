@@ -23,7 +23,7 @@ export default {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': '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',
+        'x-api-key': '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',
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify(body),
