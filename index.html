@@ -362,7 +362,7 @@ async function analyzeText(arabic){
   resultCard.classList.remove('visible'); actionRow.style.display='none';
   const prompt=`You are an expert Quran scholar. A user's device captured this Arabic text (may have minor transcription errors): "${arabic}"\n\nIdentify which Surah and verse(s) this is from. Respond ONLY with valid JSON, no markdown:\n{"surah_number":<1-114>,"surah_name_arabic":"<Arabic with diacritics>","surah_name_latin":"<transliteration>","surah_name_english":"<meaning>","verses":"<e.g. 1-3>","juz":"<number>","revelation":"Meccan or Medinan","confidence":<0-100>,"translation":"<English meaning, max 2 sentences>","note":"<optional note>"}\nIf cannot identify: {"error":"Could not identify Surah. Please try a longer or clearer passage."}`;
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const res=await fetch('https://bayan.alhajeri2006.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const data=await res.json();
     const raw=data.content?.find(b=>b.type==='text')?.text||'';
     const result=JSON.parse(raw.replace(/```json|```/g,'').trim());
