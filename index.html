@@ -414,14 +414,20 @@ async function startRecording() {
     micOuter.classList.add('recording');
     waveform.classList.add('active');
     recTimer.style.display = 'block';
+    const uiLangRec = localStorage.getItem('bayanLang') || 'en';
     micStatus.textContent = '';
     timerSeconds = 0;
-    timerVal.textContent = '0:00';
+    timerVal.textContent = '0:00'; recTimer.innerHTML = (localStorage.getItem('bayanLang')==='ar' ? '⏺ تسجيل: 0:00 — اضغط للإيقاف' : '⏺ Recording: 0:00 — Tap to stop');
     timerInterval = setInterval(() => {
       timerSeconds++;
       const m = Math.floor(timerSeconds / 60);
       const s = timerSeconds % 60;
       timerVal.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+      const uiLangTimer = localStorage.getItem('bayanLang') || 'en';
+      const timeStr = m + ':' + (s < 10 ? '0' : '') + s;
+      recTimer.innerHTML = uiLangTimer === 'ar' 
+        ? '⏺ تسجيل: ' + timeStr + ' — اضغط للإيقاف'
+        : '⏺ Recording: ' + timeStr + ' — Tap to stop';
       // Auto stop after 30 seconds
       if (timerSeconds >= 30) stopRecording();
     }, 1000);
@@ -486,7 +492,8 @@ async function transcribeAudio(blob) {
     transcriptText.textContent = arabic;
     transcriptPH.style.display = 'none';
     transcript.classList.add('has-text');
-    micStatus.textContent = 'Identifying Surah…';
+    const uiLangIdSurah = localStorage.getItem('bayanLang') || 'en';
+    micStatus.textContent = uiLangIdSurah === 'ar' ? 'جارٍ التعرف على السورة…' : 'Identifying Surah…';
 
     const uiLangLoader = localStorage.getItem('bayanLang') || 'en';
     document.getElementById('loaderText').textContent = uiLangLoader === 'ar' ? 'جارٍ البحث في القرآن الكريم…' : 'Consulting Quran database…';
