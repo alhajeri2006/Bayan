@@ -451,13 +451,15 @@ function stopRecording() {
   micOuter.classList.remove('recording');
   waveform.classList.remove('active');
   recTimer.style.display = 'none';
-  micStatus.textContent = 'Processing audio…';
+  const uiLangProc = localStorage.getItem('bayanLang') || 'en';
+  micStatus.textContent = uiLangProc === 'ar' ? 'جارٍ معالجة الصوت…' : 'Processing audio…';
   micStatus.className = 'mic-status active';
 }
 
 async function transcribeAudio(blob) {
   document.getElementById('loader').classList.add('visible');
-  document.getElementById('loaderText').textContent = 'Transcribing with Whisper…';
+  const uiLangTW = localStorage.getItem('bayanLang') || 'en';
+  document.getElementById('loaderText').textContent = uiLangTW === 'ar' ? 'جارٍ تحويل الصوت…' : 'Transcribing with Whisper…';
 
   try {
     const formData = new FormData();
