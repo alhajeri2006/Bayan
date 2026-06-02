@@ -583,8 +583,11 @@ Rules:
 
   } catch(err) {
     loader.classList.remove('visible');
-    if (mode === 'listen') { micStatus.textContent = 'Analysis failed. Check connection.'; micStatus.className = 'mic-status error'; }
+    const msg = err.message || 'Unknown error';
+    if (mode === 'listen') { micStatus.textContent = msg; micStatus.className = 'mic-status error'; }
+    else { alert('Error: ' + msg); }
     actions.style.display = 'flex';
+    console.error('Analysis error:', err);
   }
 }
 
@@ -832,4 +835,3 @@ setTimeout(() => applyLang(currentLang), 50);
 
 </body>
 </html>
-
