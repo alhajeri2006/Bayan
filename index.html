@@ -300,6 +300,10 @@
         <div class="trans-label">Translation</div>
         <div class="trans-text" id="tTrans">—</div>
       </div>
+      <div class="result-footer" id="tTafseerSection" style="display:none;border-top:1px solid var(--border2);">
+        <div class="trans-label">Tafseer · تفسير</div>
+        <div class="trans-text" id="tTafseer" style="font-style:normal;color:var(--text-mid);"></div>
+      </div>
     </div>
     <div class="actions" id="typeActions" style="display:none;">
       <button class="btn" id="clearTypeBtn">Clear</button>
@@ -529,11 +533,18 @@ async function analyze(arabic, mode) {
   result.classList.remove('visible');
   actions.style.display = 'none';
 
-  const prompt = `You are an expert Quran scholar with complete knowledge of all 114 Surahs.
+  const lang = localStorage.getItem('bayanLang') || 'en';
+  const isArabicUI = lang === 'ar';
+  const prompt = `You are an expert Quran scholar with perfect knowledge of the Quran text and tafseer.
 
-A user provided this Arabic text (may have minor transcription errors): "${arabic}"
+A user provided this Arabic text (may have transcription errors from speech recognition): "${arabic}"
 
-Identify the Surah and verse(s). Respond ONLY with valid JSON, no markdown:
+Your tasks:
+1. Identify which Surah and verse(s) this is from
+2. Write the EXACT correct Quranic text of those verses (not the user's transcription — the actual text from the Quran with full diacritics)
+3. Provide tafseer from "أيسر التفاسير لأسعد حومد" — short and clear, 2-3 sentences maximum
+
+Respond ONLY with valid JSON, no markdown:
 {
   "surah_number": <1-114>,
   "surah_name_arabic": "<Arabic name with diacritics>",
@@ -541,12 +552,14 @@ Identify the Surah and verse(s). Respond ONLY with valid JSON, no markdown:
   "surah_name_english": "<English meaning>",
   "verses": "<e.g. 1-3 or 7>",
   "juz": "<number>",
-  "revelation": "Meccan or Medinan",
+  "revelation": "${isArabicUI ? 'مكية أو مدنية' : 'Meccan or Medinan'}",
   "confidence": <0-100>,
-  "translation": "<English translation of the identified verses, max 2 sentences>",
-  "note": "<optional: note if text was unclear>"
+  "correct_arabic_text": "<the exact correct Quranic text of the identified verse(s) with full diacritics تشكيل — NOT the user transcription>",
+  "translation": "<${isArabicUI ? 'معنى الآيات باللغة العربية الفصحى، جملة أو جملتان فقط' : 'English meaning of the verses, 1-2 sentences'}>",
+  "tafseer": "<${isArabicUI ? 'تفسير مختصر من أيسر التفاسير لأسعد حومد، 2-3 جمل' : 'Brief tafseer from Ayssar Al-Tafaseer by Asaad Homad, 2-3 sentences'}>",
+  "note": "<${isArabicUI ? 'ملاحظة اختيارية إذا كان النص غير واضح' : 'optional note if text was unclear'}>"
 }
-If cannot identify: {"error": "Could not identify the Surah. Please try a longer or clearer passage."}`;
+If cannot identify: {"error": "${isArabicUI ? 'تعذّر التعرف على السورة. يرجى تجربة مقطع أطول أو أوضح.' : 'Could not identify the Surah. Please try a longer or clearer passage.'}"}`;
 
   try {
     const res = await fetch(WORKER, {
@@ -588,11 +601,25 @@ function displayResult(r, mode) {
   document.getElementById(p + 'SurahName').textContent = r.surah_name_latin || '—';
   document.getElementById(p + 'SurahMeaning').textContent = r.surah_name_english ? '"' + r.surah_name_english + '"' : '—';
   document.getElementById(p + 'Badge').textContent = 'Surah ' + r.surah_number;
-  document.getElementById(p + 'Arabic').textContent = 'سُورَةُ ' + (r.surah_name_arabic || '—');
+  // Show correct Quranic text if available, otherwise show surah name
+  if (r.correct_arabic_text) {
+    document.getElementById(p + 'Arabic').textContent = r.correct_arabic_text;
+    document.getElementById(p + 'Arabic').style.fontSize = '1.3rem';
+    document.getElementById(p + 'Arabic').style.lineHeight = '2.2';
+  } else {
+    document.getElementById(p + 'Arabic').textContent = 'سُورَةُ ' + (r.surah_name_arabic || '—');
+    document.getElementById(p + 'Arabic').style.fontSize = '1.6rem';
+  }
   document.getElementById(p + 'Verses').textContent = r.verses ? 'Ayah ' + r.verses : '—';
   document.getElementById(p + 'Juz').textContent = r.juz ? "Juz' " + r.juz : '—';
   document.getElementById(p + 'Revelation').textContent = r.revelation || '—';
   document.getElementById(p + 'Trans').textContent = r.translation || '—';
+  if (r.tafseer) {
+    document.getElementById(p + 'Tafseer').textContent = r.tafseer;
+    document.getElementById(p + 'TafseerSection').style.display = 'block';
+  } else {
+    document.getElementById(p + 'TafseerSection').style.display = 'none';
+  }
   const conf = r.confidence || 0;
   document.getElementById(p === 'r' ? 'confFill' : 'tConfFill').style.width = conf + '%';
   document.getElementById(p === 'r' ? 'confPct' : 'tConfPct').textContent = conf + '%';
@@ -688,7 +715,7 @@ const STRINGS = {
     clearType: 'Clear', againType: 'Identify Again',
     surahIdentified: 'Surah Identified',
     verses: 'Verse(s)', juz: "Juz'", revelation: 'Revelation',
-    match: 'Match', translation: 'Translation',
+    match: 'Match', translation: 'Translation', tafseer: 'Tafseer',
     recent: 'Recent', savedSurahs: 'Saved Surahs',
     emptyTitle: 'No saved Surahs yet.',
     emptyBody: 'Tap 🔖 after identifying a Surah to save it here.',
@@ -714,7 +741,7 @@ const STRINGS = {
     clearType: 'مسح', againType: 'تعرَّف مجدداً',
     surahIdentified: 'تم التعرف على السورة',
     verses: 'الآية', juz: 'الجزء', revelation: 'النزول',
-    match: 'الدقة', translation: 'الترجمة',
+    match: 'الدقة', translation: 'الترجمة', tafseer: 'التفسير',
     recent: 'الأخيرة', savedSurahs: 'السور المحفوظة',
     emptyTitle: 'لا توجد سور محفوظة بعد.',
     emptyBody: 'اضغط 🔖 بعد التعرف على السورة لحفظها هنا.',
@@ -774,7 +801,10 @@ function applyLang(lang) {
 
   // Result labels
   document.querySelectorAll('.result-surah-label').forEach(el => el.textContent = s.surahIdentified);
-  document.querySelectorAll('.trans-label').forEach(el => el.textContent = s.translation);
+  document.querySelectorAll('.trans-label').forEach((el, i) => {
+    if (i % 2 === 0) el.textContent = s.translation;
+    else el.textContent = (s.tafseer || 'Tafseer') + ' · تفسير';
+  });
   document.querySelectorAll('.conf-label').forEach(el => el.textContent = s.match);
 
   // Meta keys - listen panel
