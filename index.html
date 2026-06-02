@@ -566,7 +566,11 @@ Rules:
     }
 
     const raw = data.content?.find(b => b.type === 'text')?.text || '';
-    const parsed = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    const cleaned = raw.replace(/```json|```/g, '').trim();
+    // Extract JSON even if there's extra text around it
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON found in response');
+    const parsed = JSON.parse(jsonMatch[0]);
 
     if (parsed.error) {
       if (mode === 'listen') { micStatus.textContent = parsed.error; micStatus.className = 'mic-status error'; }
@@ -828,3 +832,4 @@ setTimeout(() => applyLang(currentLang), 50);
 
 </body>
 </html>
+
