@@ -638,7 +638,7 @@ function displayResult(r, mode) {
   bmBtn.classList.toggle('saved', isSaved);
   bmBtn.textContent = isSaved ? '⭐' : '🔖';
 
-  history.unshift({ surah: r.surah_name_latin, surahNum: r.surah_number, verses: r.verses, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), full: r });
+  history.unshift({ surah: r.surah_name_latin, surahArabic: r.surah_name_arabic, surahNum: r.surah_number, verses: r.verses, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), full: r });
   if (history.length > 10) history.pop();
   localStorage.setItem('bayanHistory', JSON.stringify(history));
   renderHistory();
@@ -691,11 +691,13 @@ function renderHistory() {
   const list = document.getElementById('historyList');
   if (!history.length) { section.style.display = 'none'; return; }
   section.style.display = 'block';
+  const uiLang = localStorage.getItem('bayanLang') || 'en';
+  const isArHistory = uiLang === 'ar';
   list.innerHTML = history.slice(0, 5).map(h => `
     <div class="history-item">
       <div>
-        <div class="history-name">${h.surah}</div>
-        <div class="history-detail">Surah ${h.surahNum} · Ayah ${h.verses || '?'}</div>
+        <div class="history-name">${isArHistory ? (h.surahArabic || h.surah) : h.surah}</div>
+        <div class="history-detail">${isArHistory ? 'سورة' : 'Surah'} ${h.surahNum} · ${isArHistory ? 'آية' : 'Ayah'} ${h.verses || '?'}</div>
       </div>
       <div class="history-time">${h.time}</div>
     </div>`).join('');
