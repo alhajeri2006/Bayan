@@ -600,7 +600,13 @@ function displayResult(r, mode) {
   const uiLang = localStorage.getItem('bayanLang') || 'en';
   const isAr = uiLang === 'ar';
   document.getElementById(p + 'SurahName').textContent = isAr ? (r.surah_name_arabic || r.surah_name_latin || '—') : (r.surah_name_latin || '—');
-  document.getElementById(p + 'SurahMeaning').textContent = r.surah_name_english ? '"' + r.surah_name_english + '"' : '—';
+  const uiLangMeaning = localStorage.getItem('bayanLang') || 'en';
+  const isArMeaning = uiLangMeaning === 'ar';
+  if (isArMeaning) {
+    document.getElementById(p + 'SurahMeaning').textContent = r.surah_name_meaning_arabic ? '"' + r.surah_name_meaning_arabic + '"' : (r.surah_name_english ? '"' + r.surah_name_english + '"' : '—');
+  } else {
+    document.getElementById(p + 'SurahMeaning').textContent = r.surah_name_english ? '"' + r.surah_name_english + '"' : '—';
+  }
   const uiLangBadge = localStorage.getItem('bayanLang') || 'en';
   const isArBadge = uiLangBadge === 'ar';
   document.getElementById(p + 'Badge').textContent = isArBadge ? ('سورة ' + r.surah_number) : ('Surah ' + r.surah_number);
