@@ -99,7 +99,7 @@
     .conf-pct { font-size: 0.7rem; color: var(--gold); min-width: 2.5rem; text-align: right; }
     .result-footer { background: var(--surface); padding: 1rem 1.4rem; border-top: 1px solid var(--border); }
     .trans-label { font-size: 0.58rem; color: var(--text-dim); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.4rem; }
-    .trans-text { font-size: 0.88rem; color: var(--text); line-height: 1.75; font-style: italic; }
+    .trans-text { font-size: 1rem; color: #d4cfc4; line-height: 1.8; font-style: italic; }
     .actions { display: flex; gap: 0.75rem; }
     .btn { flex: 1; padding: 0.75rem; border-radius: 0.55rem; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); font-family: 'Lato', sans-serif; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; -webkit-tap-highlight-color: transparent; }
     .btn:active { opacity: 0.7; }
@@ -255,7 +255,7 @@
       </div>
       <div class="result-footer" id="rTafseerSection" style="display:none;border-top:1px solid var(--border2);">
         <div class="trans-label">Tafseer · تفسير</div>
-        <div class="trans-text" id="rTafseer" style="font-style:normal;color:var(--text-mid);"></div>
+        <div class="trans-text" id="rTafseer" style="font-style:normal;color:#b8b3a8;font-size:0.95rem;line-height:1.85;"></div>
       </div>
     </div>
 
@@ -306,7 +306,7 @@
       </div>
       <div class="result-footer" id="tTafseerSection" style="display:none;border-top:1px solid var(--border2);">
         <div class="trans-label">Tafseer · تفسير</div>
-        <div class="trans-text" id="tTafseer" style="font-style:normal;color:var(--text-mid);"></div>
+        <div class="trans-text" id="tTafseer" style="font-style:normal;color:#b8b3a8;font-size:0.95rem;line-height:1.85;"></div>
       </div>
     </div>
     <div class="actions" id="typeActions" style="display:none;">
@@ -597,7 +597,9 @@ Rules:
 
 function displayResult(r, mode) {
   const p = mode === 'listen' ? 'r' : 't';
-  document.getElementById(p + 'SurahName').textContent = r.surah_name_latin || '—';
+  const uiLang = localStorage.getItem('bayanLang') || 'en';
+  const isAr = uiLang === 'ar';
+  document.getElementById(p + 'SurahName').textContent = isAr ? (r.surah_name_arabic || r.surah_name_latin || '—') : (r.surah_name_latin || '—');
   document.getElementById(p + 'SurahMeaning').textContent = r.surah_name_english ? '"' + r.surah_name_english + '"' : '—';
   document.getElementById(p + 'Badge').textContent = 'Surah ' + r.surah_number;
   // Show correct Quranic text if available, otherwise show surah name
