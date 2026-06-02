@@ -488,7 +488,8 @@ async function transcribeAudio(blob) {
     transcript.classList.add('has-text');
     micStatus.textContent = 'Identifying Surah…';
 
-    document.getElementById('loaderText').textContent = 'Consulting Quran database…';
+    const uiLangLoader = localStorage.getItem('bayanLang') || 'en';
+    document.getElementById('loaderText').textContent = uiLangLoader === 'ar' ? 'جارٍ البحث في القرآن الكريم…' : 'Consulting Quran database…';
     await analyze(arabic, 'listen');
 
   } catch(err) {
@@ -584,7 +585,11 @@ Rules:
     }
 
     displayResult(parsed, mode);
-    if (mode === 'listen') { micStatus.textContent = 'Surah identified ✓'; micStatus.className = 'mic-status success'; }
+    if (mode === 'listen') {
+      const uiLangId = localStorage.getItem('bayanLang') || 'en';
+      micStatus.textContent = uiLangId === 'ar' ? 'تم التعرف على السورة ✓' : 'Surah identified ✓';
+      micStatus.className = 'mic-status success';
+    }
 
   } catch(err) {
     loader.classList.remove('visible');
