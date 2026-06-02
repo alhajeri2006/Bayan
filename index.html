@@ -584,7 +584,7 @@ Rules:
     }
 
     displayResult(parsed, mode);
-    if (mode === 'listen') { micStatus.textContent = parsed.note || 'Surah identified ✓'; micStatus.className = 'mic-status success'; }
+    if (mode === 'listen') { micStatus.textContent = 'Surah identified ✓'; micStatus.className = 'mic-status success'; }
 
   } catch(err) {
     loader.classList.remove('visible');
