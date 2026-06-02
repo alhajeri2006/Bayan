@@ -140,9 +140,22 @@
     #iosBanner strong { color: var(--gold-light); font-family: 'Cinzel', serif; }
     .close-ios { display: block; margin-top: 0.6rem; color: var(--text-dim); font-size: 0.68rem; cursor: pointer; }
     .ornament { text-align: center; color: var(--gold-dim); font-size: 0.9rem; letter-spacing: 0.4em; padding: 0.5rem 0; }
-    .lang-toggle { background: var(--surface); border: 1px solid var(--border); border-radius: 2rem; padding: 0.35rem 0.75rem; color: var(--text-dim); font-size: 0.72rem; cursor: pointer; font-family: "Lato", sans-serif; letter-spacing: 0.08em; transition: all 0.2s; -webkit-tap-highlight-color: transparent; }
-.lang-toggle:hover { border-color: var(--gold-dim); color: var(--gold-light); }
-@media (max-width: 380px) { .nav-logo { font-size: 1.1rem; } .container { padding-left: 1rem; padding-right: 1rem; } .actions { flex-direction: column; } }
+    .lang-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 2rem;
+      padding: 0.35rem 0.75rem;
+      color: var(--text-mid);
+      font-size: 0.72rem;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      letter-spacing: 0.08em;
+      transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+    .lang-toggle:hover { border-color: var(--gold-dim); color: var(--gold-light); }
+    @media (max-width: 380px) { .nav-logo { font-size: 1.1rem; } .container { padding-left: 1rem; padding-right: 1rem; } .actions { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -167,7 +180,7 @@
 </div>
 
 <nav class="nav">
-  <div class="nav-logo">Ba<span>yān</span></div>
+  <div class="nav-logo" id="navLogo">Ba<span>yān</span></div>
   <div class="nav-tabs">
     <button class="nav-tab active" data-tab="listen">🎙 Listen</button>
     <button class="nav-tab" data-tab="type">⌨️ Type</button>
@@ -658,59 +671,60 @@ function renderHistory() {
 
 renderHistory();
 </script>
-</body>
-</html>
 
 <script>
-// ── Language Toggle ──
 const STRINGS = {
   en: {
-    listen: '🎙 Listen', type: '⌨️ Type', saved: '🔖 Saved',
+    logo: 'Ba<span>yān</span>',
+    toggleLabel: 'عربي',
+    bismillah: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ',
+    tabs: ['🎙 Listen', '⌨️ Type', '🔖 Saved'],
     micStatus: 'Tap to record — works on all devices',
     transcriptPH: 'Transcribed Arabic will appear here…',
+    typeLabel: 'Type or paste Arabic text',
     inputPH: 'Type or paste Arabic verses here…',
     identifyBtn: 'Identify Surah ✦',
-    clearBtn: 'Clear', listenAgainBtn: 'Record Again',
-    clearTypeBtn: 'Clear', identifyAgainBtn: 'Identify Again',
-    loaderTranscribe: 'Transcribing with Whisper…',
-    loaderIdentify: 'Consulting Quran database…',
+    clearListen: 'Clear', againListen: 'Record Again',
+    clearType: 'Clear', againType: 'Identify Again',
     surahIdentified: 'Surah Identified',
-    versesLabel: 'Verse(s)', juzLabel: "Juz'", revelationLabel: 'Revelation',
-    matchLabel: 'Match', translationLabel: 'Translation',
-    recentLabel: 'Recent', savedLabel: 'Saved Surahs',
-    emptyText: 'No saved Surahs yet.\nTap 🔖 after identifying a Surah to save it here.',
-    typeLabel: 'Type or paste Arabic text',
-    bismillah: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ',
-    toggleLabel: 'عربي',
+    verses: 'Verse(s)', juz: "Juz'", revelation: 'Revelation',
+    match: 'Match', translation: 'Translation',
+    recent: 'Recent', savedSurahs: 'Saved Surahs',
+    emptyTitle: 'No saved Surahs yet.',
+    emptyBody: 'Tap 🔖 after identifying a Surah to save it here.',
     installTitle: 'Install Bayān',
     installSub: 'Add to home screen for instant access.',
     installBtn: 'Install', dismissBtn: 'Not now',
-    iosText: 'Install Bayān on iPhone\nTap Share ⬆ in Safari →\n"Add to Home Screen" → Add',
-    iosClose: 'Got it ✓'
+    iosMsg: 'Install Bayān on iPhone',
+    iosStep: 'Tap <strong>Share ⬆</strong> in Safari →<br><strong>"Add to Home Screen"</strong> → <strong>Add</strong>',
+    iosClose: 'Got it ✓',
+    dir: 'ltr'
   },
   ar: {
-    listen: '🎙 استمع', type: '⌨️ اكتب', saved: '🔖 محفوظ',
-    micStatus: 'اضغط للتسجيل — يعمل على جميع الأجهزة',
-    transcriptPH: 'ستظهر النصوص العربية هنا…',
-    inputPH: 'اكتب أو الصق الآيات هنا…',
-    identifyBtn: 'تعرف على السورة ✦',
-    clearBtn: 'مسح', listenAgainBtn: 'تسجيل مجدداً',
-    clearTypeBtn: 'مسح', identifyAgainBtn: 'تعرف مجدداً',
-    loaderTranscribe: 'جارٍ تحويل الصوت…',
-    loaderIdentify: 'جارٍ البحث في القرآن الكريم…',
-    surahIdentified: 'تم التعرف على السورة',
-    versesLabel: 'الآية', juzLabel: 'الجزء', revelationLabel: 'النزول',
-    matchLabel: 'الدقة', translationLabel: 'الترجمة',
-    recentLabel: 'الأخيرة', savedLabel: 'السور المحفوظة',
-    emptyText: 'لا توجد سور محفوظة بعد.\nاضغط 🔖 بعد التعرف على السورة لحفظها.',
-    typeLabel: 'اكتب أو الصق النص العربي',
-    bismillah: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ',
+    logo: 'بَ<span>يَان</span>',
     toggleLabel: 'English',
+    bismillah: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ',
+    tabs: ['🎙 استمع', '⌨️ اكتب', '🔖 محفوظ'],
+    micStatus: 'اضغط للتسجيل — يعمل على جميع الأجهزة',
+    transcriptPH: 'ستظهر النصوص العربية المُعرَّفة هنا…',
+    typeLabel: 'اكتب أو الصق النص العربي',
+    inputPH: 'اكتب أو الصق الآيات هنا…',
+    identifyBtn: 'تعرَّف على السورة ✦',
+    clearListen: 'مسح', againListen: 'سجّل مجدداً',
+    clearType: 'مسح', againType: 'تعرَّف مجدداً',
+    surahIdentified: 'تم التعرف على السورة',
+    verses: 'الآية', juz: 'الجزء', revelation: 'النزول',
+    match: 'الدقة', translation: 'الترجمة',
+    recent: 'الأخيرة', savedSurahs: 'السور المحفوظة',
+    emptyTitle: 'لا توجد سور محفوظة بعد.',
+    emptyBody: 'اضغط 🔖 بعد التعرف على السورة لحفظها هنا.',
     installTitle: 'تثبيت بيان',
     installSub: 'أضف إلى الشاشة الرئيسية للوصول السريع.',
     installBtn: 'تثبيت', dismissBtn: 'ليس الآن',
-    iosText: 'ثبّت بيان على iPhone\nاضغط مشاركة ⬆ في Safari →\n"إضافة إلى الشاشة الرئيسية" → إضافة',
-    iosClose: 'حسناً ✓'
+    iosMsg: 'ثبّت بيان على iPhone',
+    iosStep: 'اضغط <strong>مشاركة ⬆</strong> في Safari →<br><strong>إضافة إلى الشاشة الرئيسية</strong> → <strong>إضافة</strong>',
+    iosClose: 'حسناً ✓',
+    dir: 'rtl'
   }
 };
 
@@ -719,14 +733,13 @@ let currentLang = localStorage.getItem('bayanLang') || 'en';
 function applyLang(lang) {
   const s = STRINGS[lang];
   const isAr = lang === 'ar';
-  document.documentElement.lang = lang;
-  document.documentElement.dir = isAr ? 'rtl' : 'ltr';
 
-  // Nav tabs
-  document.querySelectorAll('.nav-tab').forEach((tab, i) => {
-    const keys = ['listen','type','saved'];
-    tab.textContent = s[keys[i]];
-  });
+  // Page direction
+  document.documentElement.lang = lang;
+  document.documentElement.dir = s.dir;
+
+  // Logo
+  document.getElementById('navLogo').innerHTML = s.logo;
 
   // Toggle button
   document.getElementById('langToggle').textContent = s.toggleLabel;
@@ -734,35 +747,40 @@ function applyLang(lang) {
   // Bismillah
   document.querySelector('.bismillah').textContent = s.bismillah;
 
-  // Mic status (only if not in active state)
+  // Nav tabs
+  document.querySelectorAll('.nav-tab').forEach((tab, i) => {
+    tab.textContent = s.tabs[i];
+  });
+
+  // Mic status (only if idle)
   if (!isRecording) {
     micStatus.textContent = s.micStatus;
+    micStatus.className = 'mic-status';
   }
 
   // Transcript placeholder
   document.getElementById('transcriptPH').textContent = s.transcriptPH;
 
-  // Input placeholder
-  document.getElementById('arabicInput').placeholder = s.inputPH;
-
-  // Type label
+  // Type section
   document.querySelector('.type-label').textContent = s.typeLabel;
-
-  // Buttons
+  document.getElementById('arabicInput').placeholder = s.inputPH;
   document.getElementById('identifyBtn').textContent = s.identifyBtn;
-  document.getElementById('clearBtn').textContent = s.clearBtn;
-  document.getElementById('listenAgainBtn').textContent = s.listenAgainBtn;
-  document.getElementById('clearTypeBtn').textContent = s.clearTypeBtn;
-  document.getElementById('identifyAgainBtn').textContent = s.identifyAgainBtn;
+
+  // Action buttons
+  document.getElementById('clearBtn').textContent = s.clearListen;
+  document.getElementById('listenAgainBtn').textContent = s.againListen;
+  document.getElementById('clearTypeBtn').textContent = s.clearType;
+  document.getElementById('identifyAgainBtn').textContent = s.againType;
 
   // Result labels
   document.querySelectorAll('.result-surah-label').forEach(el => el.textContent = s.surahIdentified);
-  document.querySelectorAll('.meta-key').forEach((el, i) => {
-    const keys = [s.versesLabel, s.juzLabel, s.revelationLabel, s.versesLabel, s.juzLabel, s.revelationLabel];
-    el.textContent = keys[i] || el.textContent;
-  });
-  document.querySelectorAll('.conf-label').forEach(el => el.textContent = s.matchLabel);
-  document.querySelectorAll('.trans-label').forEach(el => el.textContent = s.translationLabel);
+  document.querySelectorAll('.trans-label').forEach(el => el.textContent = s.translation);
+  document.querySelectorAll('.conf-label').forEach(el => el.textContent = s.match);
+
+  // Meta keys - listen panel
+  const allMetaKeys = document.querySelectorAll('.meta-key');
+  const metaLabels = [s.verses, s.juz, s.revelation, s.verses, s.juz, s.revelation];
+  allMetaKeys.forEach((el, i) => { if (metaLabels[i]) el.textContent = metaLabels[i]; });
 
   // Install banner
   document.querySelector('.install-text strong').textContent = s.installTitle;
@@ -770,9 +788,13 @@ function applyLang(lang) {
   document.getElementById('installBtn').textContent = s.installBtn;
   document.getElementById('dismissBanner').textContent = s.dismissBtn;
 
-  // Section titles
-  const sectionTitles = document.querySelectorAll('.section-title');
-  if (sectionTitles.length) sectionTitles[0].childNodes[0].textContent = s.recentLabel;
+  // iOS banner
+  document.querySelector('#iosBanner strong').textContent = s.iosMsg;
+  document.getElementById('closeIos').textContent = s.iosClose;
+
+  // Re-render history section title if visible
+  const histTitle = document.querySelector('#historySection .section-title');
+  if (histTitle) histTitle.childNodes[0].textContent = s.recent + ' ';
 
   localStorage.setItem('bayanLang', lang);
   currentLang = lang;
@@ -782,8 +804,9 @@ document.getElementById('langToggle').addEventListener('click', () => {
   applyLang(currentLang === 'en' ? 'ar' : 'en');
 });
 
-// Apply saved language on load
-applyLang(currentLang);
+// Apply on load after a tiny delay so all elements exist
+setTimeout(() => applyLang(currentLang), 50);
 </script>
 
-
+</body>
+</html>
