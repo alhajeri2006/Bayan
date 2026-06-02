@@ -140,7 +140,9 @@
     #iosBanner strong { color: var(--gold-light); font-family: 'Cinzel', serif; }
     .close-ios { display: block; margin-top: 0.6rem; color: var(--text-dim); font-size: 0.68rem; cursor: pointer; }
     .ornament { text-align: center; color: var(--gold-dim); font-size: 0.9rem; letter-spacing: 0.4em; padding: 0.5rem 0; }
-    @media (max-width: 380px) { .nav-logo { font-size: 1.1rem; } .container { padding-left: 1rem; padding-right: 1rem; } .actions { flex-direction: column; } }
+    .lang-toggle { background: var(--surface); border: 1px solid var(--border); border-radius: 2rem; padding: 0.35rem 0.75rem; color: var(--text-dim); font-size: 0.72rem; cursor: pointer; font-family: "Lato", sans-serif; letter-spacing: 0.08em; transition: all 0.2s; -webkit-tap-highlight-color: transparent; }
+.lang-toggle:hover { border-color: var(--gold-dim); color: var(--gold-light); }
+@media (max-width: 380px) { .nav-logo { font-size: 1.1rem; } .container { padding-left: 1rem; padding-right: 1rem; } .actions { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -171,7 +173,7 @@
     <button class="nav-tab" data-tab="type">⌨️ Type</button>
     <button class="nav-tab" data-tab="saved">🔖 Saved</button>
   </div>
-  <div style="width:32px"></div>
+  <button class="lang-toggle" id="langToggle">عربي</button>
 </nav>
 
 <div class="container">
@@ -658,4 +660,130 @@ renderHistory();
 </script>
 </body>
 </html>
+
+<script>
+// ── Language Toggle ──
+const STRINGS = {
+  en: {
+    listen: '🎙 Listen', type: '⌨️ Type', saved: '🔖 Saved',
+    micStatus: 'Tap to record — works on all devices',
+    transcriptPH: 'Transcribed Arabic will appear here…',
+    inputPH: 'Type or paste Arabic verses here…',
+    identifyBtn: 'Identify Surah ✦',
+    clearBtn: 'Clear', listenAgainBtn: 'Record Again',
+    clearTypeBtn: 'Clear', identifyAgainBtn: 'Identify Again',
+    loaderTranscribe: 'Transcribing with Whisper…',
+    loaderIdentify: 'Consulting Quran database…',
+    surahIdentified: 'Surah Identified',
+    versesLabel: 'Verse(s)', juzLabel: "Juz'", revelationLabel: 'Revelation',
+    matchLabel: 'Match', translationLabel: 'Translation',
+    recentLabel: 'Recent', savedLabel: 'Saved Surahs',
+    emptyText: 'No saved Surahs yet.\nTap 🔖 after identifying a Surah to save it here.',
+    typeLabel: 'Type or paste Arabic text',
+    bismillah: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ',
+    toggleLabel: 'عربي',
+    installTitle: 'Install Bayān',
+    installSub: 'Add to home screen for instant access.',
+    installBtn: 'Install', dismissBtn: 'Not now',
+    iosText: 'Install Bayān on iPhone\nTap Share ⬆ in Safari →\n"Add to Home Screen" → Add',
+    iosClose: 'Got it ✓'
+  },
+  ar: {
+    listen: '🎙 استمع', type: '⌨️ اكتب', saved: '🔖 محفوظ',
+    micStatus: 'اضغط للتسجيل — يعمل على جميع الأجهزة',
+    transcriptPH: 'ستظهر النصوص العربية هنا…',
+    inputPH: 'اكتب أو الصق الآيات هنا…',
+    identifyBtn: 'تعرف على السورة ✦',
+    clearBtn: 'مسح', listenAgainBtn: 'تسجيل مجدداً',
+    clearTypeBtn: 'مسح', identifyAgainBtn: 'تعرف مجدداً',
+    loaderTranscribe: 'جارٍ تحويل الصوت…',
+    loaderIdentify: 'جارٍ البحث في القرآن الكريم…',
+    surahIdentified: 'تم التعرف على السورة',
+    versesLabel: 'الآية', juzLabel: 'الجزء', revelationLabel: 'النزول',
+    matchLabel: 'الدقة', translationLabel: 'الترجمة',
+    recentLabel: 'الأخيرة', savedLabel: 'السور المحفوظة',
+    emptyText: 'لا توجد سور محفوظة بعد.\nاضغط 🔖 بعد التعرف على السورة لحفظها.',
+    typeLabel: 'اكتب أو الصق النص العربي',
+    bismillah: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ',
+    toggleLabel: 'English',
+    installTitle: 'تثبيت بيان',
+    installSub: 'أضف إلى الشاشة الرئيسية للوصول السريع.',
+    installBtn: 'تثبيت', dismissBtn: 'ليس الآن',
+    iosText: 'ثبّت بيان على iPhone\nاضغط مشاركة ⬆ في Safari →\n"إضافة إلى الشاشة الرئيسية" → إضافة',
+    iosClose: 'حسناً ✓'
+  }
+};
+
+let currentLang = localStorage.getItem('bayanLang') || 'en';
+
+function applyLang(lang) {
+  const s = STRINGS[lang];
+  const isAr = lang === 'ar';
+  document.documentElement.lang = lang;
+  document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+
+  // Nav tabs
+  document.querySelectorAll('.nav-tab').forEach((tab, i) => {
+    const keys = ['listen','type','saved'];
+    tab.textContent = s[keys[i]];
+  });
+
+  // Toggle button
+  document.getElementById('langToggle').textContent = s.toggleLabel;
+
+  // Bismillah
+  document.querySelector('.bismillah').textContent = s.bismillah;
+
+  // Mic status (only if not in active state)
+  if (!isRecording) {
+    micStatus.textContent = s.micStatus;
+  }
+
+  // Transcript placeholder
+  document.getElementById('transcriptPH').textContent = s.transcriptPH;
+
+  // Input placeholder
+  document.getElementById('arabicInput').placeholder = s.inputPH;
+
+  // Type label
+  document.querySelector('.type-label').textContent = s.typeLabel;
+
+  // Buttons
+  document.getElementById('identifyBtn').textContent = s.identifyBtn;
+  document.getElementById('clearBtn').textContent = s.clearBtn;
+  document.getElementById('listenAgainBtn').textContent = s.listenAgainBtn;
+  document.getElementById('clearTypeBtn').textContent = s.clearTypeBtn;
+  document.getElementById('identifyAgainBtn').textContent = s.identifyAgainBtn;
+
+  // Result labels
+  document.querySelectorAll('.result-surah-label').forEach(el => el.textContent = s.surahIdentified);
+  document.querySelectorAll('.meta-key').forEach((el, i) => {
+    const keys = [s.versesLabel, s.juzLabel, s.revelationLabel, s.versesLabel, s.juzLabel, s.revelationLabel];
+    el.textContent = keys[i] || el.textContent;
+  });
+  document.querySelectorAll('.conf-label').forEach(el => el.textContent = s.matchLabel);
+  document.querySelectorAll('.trans-label').forEach(el => el.textContent = s.translationLabel);
+
+  // Install banner
+  document.querySelector('.install-text strong').textContent = s.installTitle;
+  document.querySelector('.install-text span').textContent = s.installSub;
+  document.getElementById('installBtn').textContent = s.installBtn;
+  document.getElementById('dismissBanner').textContent = s.dismissBtn;
+
+  // Section titles
+  const sectionTitles = document.querySelectorAll('.section-title');
+  if (sectionTitles.length) sectionTitles[0].childNodes[0].textContent = s.recentLabel;
+
+  localStorage.setItem('bayanLang', lang);
+  currentLang = lang;
+}
+
+document.getElementById('langToggle').addEventListener('click', () => {
+  applyLang(currentLang === 'en' ? 'ar' : 'en');
+});
+
+// Apply saved language on load
+applyLang(currentLang);
+</script>
+
 
