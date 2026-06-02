@@ -212,6 +212,7 @@
         <div class="wbar"></div><div class="wbar"></div>
       </div>
       <div class="mic-status" id="micStatus">Tap to record — works on all devices</div>
+      <div style="font-size:0.65rem;color:var(--text-dim);letter-spacing:0.08em;text-align:center;margin-top:-0.5rem;" id="micHint">Recite at least 3-5 seconds of a Surah clearly</div>
       <div class="rec-timer" id="recTimer" style="display:none;">⏺ Recording: <span id="timerVal">0:00</span> — Tap to stop</div>
       <div class="transcript" id="transcript" dir="rtl">
         <span id="transcriptPH" style="opacity:0.3;font-family:'Lato',sans-serif;font-size:0.8rem;direction:ltr;">Transcribed Arabic will appear here…</span>
@@ -850,6 +851,8 @@ function applyLang(lang) {
   const histTitle = document.querySelector('#historySection .section-title');
   if (histTitle) histTitle.childNodes[0].textContent = s.recent + ' ';
 
+  const micHint = document.getElementById('micHint');
+  if (micHint) micHint.textContent = isAr ? 'اتلُ على الأقل 3-5 ثوانٍ من السورة بوضوح' : 'Recite at least 3-5 seconds of a Surah clearly';
   localStorage.setItem('bayanLang', lang);
   currentLang = lang;
 }
