@@ -601,7 +601,9 @@ function displayResult(r, mode) {
   const isAr = uiLang === 'ar';
   document.getElementById(p + 'SurahName').textContent = isAr ? (r.surah_name_arabic || r.surah_name_latin || '—') : (r.surah_name_latin || '—');
   document.getElementById(p + 'SurahMeaning').textContent = r.surah_name_english ? '"' + r.surah_name_english + '"' : '—';
-  document.getElementById(p + 'Badge').textContent = 'Surah ' + r.surah_number;
+  const uiLangBadge = localStorage.getItem('bayanLang') || 'en';
+  const isArBadge = uiLangBadge === 'ar';
+  document.getElementById(p + 'Badge').textContent = isArBadge ? ('سورة ' + r.surah_number) : ('Surah ' + r.surah_number);
   // Show correct Quranic text if available, otherwise show surah name
   if (r.correct_arabic_text) {
     document.getElementById(p + 'Arabic').textContent = r.correct_arabic_text;
@@ -611,10 +613,19 @@ function displayResult(r, mode) {
     document.getElementById(p + 'Arabic').textContent = 'سُورَةُ ' + (r.surah_name_arabic || '—');
     document.getElementById(p + 'Arabic').style.fontSize = '1.6rem';
   }
-  document.getElementById(p + 'Verses').textContent = r.verses ? 'Ayah ' + r.verses : '—';
-  document.getElementById(p + 'Juz').textContent = r.juz ? "Juz' " + r.juz : '—';
+  const uiLangMeta = localStorage.getItem('bayanLang') || 'en';
+  const isArMeta = uiLangMeta === 'ar';
+  document.getElementById(p + 'Verses').textContent = r.verses ? (isArMeta ? 'آية ' + r.verses : 'Ayah ' + r.verses) : '—';
+  document.getElementById(p + 'Juz').textContent = r.juz ? (isArMeta ? 'الجزء ' + r.juz : "Juz' " + r.juz) : '—';
   document.getElementById(p + 'Revelation').textContent = r.revelation || '—';
-  document.getElementById(p + 'Trans').textContent = r.translation || '—';
+  const uiLangTrans = localStorage.getItem('bayanLang') || 'en';
+  const transFooter = document.getElementById(p + 'Trans')?.closest('.result-footer');
+  if (uiLangTrans === 'ar') {
+    if (transFooter) transFooter.style.display = 'none';
+  } else {
+    if (transFooter) transFooter.style.display = 'block';
+    document.getElementById(p + 'Trans').textContent = r.translation || '—';
+  }
   const tafseerEl = document.getElementById(p + 'Tafseer');
   const tafseerSection = document.getElementById(p + 'TafseerSection');
   if (tafseerEl && tafseerSection) {
